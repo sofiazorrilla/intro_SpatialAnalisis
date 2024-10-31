@@ -1,0 +1,100 @@
+---
+title: "Notas sobre introducción a datos vectoriales"
+author: "Sofía Zorrilla"
+format: html
+---
+
+## Historia de R-spatial: una línea de tiempo
+
+- Década de 1990: Se desarrollan los primeros paquetes espaciales en el lenguaje S, incluyendo scripts para estadísticas espaciales. 
+
+- Década del 2000: Las clases de sp se popularizan rápidamente para datos geográficos en R, con un aumento en el número de paquetes que dependen de él. 
+
+  - Año 2000: Aparecen paquetes R para diversos métodos espaciales como el análisis de patrones de puntos, la geoestadística, el análisis exploratorio de datos espaciales y la econometría espacial. Algunos ejemplos son spatial, sgeostat y splancs, que aún están disponibles. 
+  
+  - 2001: Ripley describe paquetes clave para el suavizado espacial, la interpolación y el análisis de patrones de puntos, incluyendo spatstat, que sigue en desarrollo. 
+    
+    - 2001: Bivand destaca la necesidad de estandarizar las interfaces espaciales, los mecanismos de intercambio de datos con GIS y la gestión de metadatos espaciales como los CRS. 
+  
+  - 2003: Se lanza rgdal, proporcionando enlaces a GDAL para R, lo que mejora la importación de datos de diversos formatos geográficos. Inicialmente solo admitía rásteres, pero luego incorporó soporte para CRS, reproyecciones e importación de vectores. 
+
+  - 2005: Se lanza sp, introduciendo clases y métodos genéricos para manejar coordenadas geográficas, incluyendo puntos, líneas, polígonos y cuadrículas, así como datos de atributos. 
+
+  - 2008: Se publica la primera edición de Applied Spatial Data Analysis with R (ASDAR), consolidando el uso de sp y rgdal. 
+  
+  - 2009: Se lanza RgoogleMaps, permitiendo superponer datos espaciales de R sobre mapas base de servicios en línea como Google Maps y OpenStreetMap. 
+ 
+  - 2010: Aparece rgeos durante un proyecto Google Summer of Code, permitiendo operaciones geométricas en objetos sp, como la intersección espacial y la modificación de geometrías. 
+
+    - 2010: Se lanza raster, proporcionando un sistema de clases y funciones para operaciones con datos ráster, incluyendo soporte para conjuntos de datos grandes y álgebra de mapas. 
+Década del 2000-2010: Se desarrollan puentes entre R y software GIS dedicado, como GRASS, spgrass6, rgrass7, rgrass, qgisprocess, Rsagacmd, RSAGA y RPyGeo. 
+
+    - 2010: ggmap agrega la capacidad de mapas base a ggplot2, aunque la necesidad de fortificar los objetos espaciales limita su eficiencia. 
+    
+    - 2010: rasterVis impulsa la visualización de datos ráster. 
+    
+    - 2010 - presente: La creación de mapas en R se convierte en un tema central, con paquetes dedicados como tmap, leaflet y mapview ganando popularidad. 
+
+- 2014: Se lanza el paquete dplyr, influyendo en el ecosistema espacial de R con su enfoque en datos ordenados y funciones intuitivas.
+
+- Finales de 2016: dplyr, junto con otros paquetes como ggplot2, se incluyen en el metapaquete tidyverse, impulsando la demanda de "datos geográficos ordenados", que sf satisface en parte. 
+
+- 2018: Se publica la primera edición de Geocomputation with R. 
+
+- 2020: terra se lanza como sucesor de raster, mejorando la velocidad y la interfaz de usuario para el trabajo con rásteres. 
+
+- Mediados de 2021: sf comienza a utilizar el motor de geometría esférica S2 para operaciones en conjuntos de datos no proyectados. 
+
+- Desde 2018: Surgen nuevas formas de representar y trabajar con datos geográficos en R, como los paquetes stars y lidR, impulsadas por nuevas tecnologías y estándares. 
+
+- Desde 2018: Las actualizaciones importantes de la biblioteca PROJ obligan a reemplazar las representaciones de "cadena de proyección" de los CRS con "Texto bien conocido". 
+
+- Desde 2018: Se desarrollan y mejoran varios paquetes para la visualización de datos espaciales, como rayshader para visualizaciones 3D, ggspatial para elementos de mapa en ggplot2, gganimate para animaciones espaciales, y leafgl y mapdeck para mapas interactivos de alto rendimiento. Se actualizan y mejoran paquetes existentes como mapsf y tmap. 
+
+- Finales de 2021: Se anuncia el retiro planificado de rgdal, rgeos y maptools, lo que influye en los flujos de trabajo existentes y los paquetes que dependen de ellos.
+
+- Octubre de 2023: rgdal, rgeos y maptools se archivan en CRAN. 
+
+- Presente: Los paquetes R modernos como sf y terra proporcionan una base sólida y preparada para el 
+futuro para la geocómputo. 
+
+## Ventajas de usar sf (simple features)
+
+- Lectura y escritura rápida de datos
+- Rendimiento de trazado mejorado
+- Los objetos sf pueden tratarse como marcos de datos en la mayoría de las operaciones
+- Los nombres de las funciones sf son relativamente consistentes e intuitivos (todos comienzan con `st_`)
+- Las funciones sf se pueden combinar con el operador |> y funcionan bien con la colección de paquetes R de tidyverse.
+
+## Objetos sf
+
+Los objetos sf tienen dos componentes principales:
+
+- Datos de geográficos (sfc). Los datos geográficos están guardados en una columna-lista y se compone de:
+  - sistema de coordenadas de referencia (`crs`)
+  - extension (`bbox`)
+  - presición (`precision`)
+  - número de geometrías vacías (`n_empty`)
+  - tipo de geometría 
+- Metadatos asociados a los datos geográficos (data.frame)
+
+![](img/sf_obj.png)
+
+
+
+## Tipos de geometrías
+
+![](img/sf-classes.png)
+
+```{.r}
+
+st_point(x = c(NA_real_, NA_real_), dim = "XYZ")
+st_multipoint(x = matrix(numeric(0), 0, 2), dim = "XYZ")
+st_linestring(x = matrix(numeric(0), 0, 2), dim = "XYZ")
+st_polygon(x = list(), dim = if (length(x)) "XYZ" else "XY")
+st_multilinestring(x = list(), dim = if (length(x)) "XYZ" else "XY")
+st_multipolygon(x = list(), dim = if (length(x)) "XYZ" else "XY")
+st_geometrycollection(x = list(), dims = "XY")
+
+```
+
